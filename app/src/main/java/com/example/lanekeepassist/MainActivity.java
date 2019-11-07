@@ -1,11 +1,16 @@
 package com.example.lanekeepassist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +29,9 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1;
+
+    public static final String CHANNEL_ID = "LKA";
+
     BluetoothManager bluetoothManager = new BluetoothManager();
 
     final int handlerState = 0;
@@ -47,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
     // String for MAC address
     private static final String deviceMAC = "DC:A6:32:3C:18:BE";
 
+    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+
+
+
 //    Handler handler = new Handler() {
 //        @Override
 //        public void handleMessage(Message msg) {
@@ -64,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        createNotificationChannel();
 
         btHandler = new BluetoothHandler();
 
@@ -223,8 +237,32 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = msg.getData();
             String string = bundle.getString("key");
             txtReceived.setText(string);
+            notificationManagerCompat.notify(0, notificationBuilder.build());
         }
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("LKA notification")
+            .setContentText("Much longer text that cannot fit one line...")
+            .setStyle(new NotificationCompat.BigTextStyle()
+                    .bigText("Much longer text that cannot fit one line..."))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
 }
 
