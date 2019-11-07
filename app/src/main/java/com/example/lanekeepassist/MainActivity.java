@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonConnect, buttonSend;
     TextView txtReceived;
     EditText editTxtToSend;
-    Handler bluetoothHandler;
+    Handler btHandler;
 
     private BluetoothAdapter btAdapter = null;
     private BluetoothDevice btDevice = null;
@@ -66,13 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         initializeViews();
 
-        bluetoothHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                Bundle bundle = msg.getData();
-                String string = bundle.getString("key");
-                txtReceived.setText(string);
-            }
-        };
+        btHandler = new BluetoothHandler();
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         btDevice = btAdapter.getRemoteDevice(deviceMAC);
@@ -105,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //I send a character when resuming.beginning transmission to check device is connected
                 //If it is not an exception will be thrown in the write method and finish() will be called
-                mConnectedThread.write("x");
+                mConnectedThread.write("start");
             }
         });
 
@@ -125,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause()
+    public void onDestroy()
     {
-        super.onPause();
+        super.onDestroy();
         try
         {
             //Don't leave Bluetooth sockets open when leaving activity
@@ -137,17 +130,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void connectToPi(View view){
-        bluetoothManager.initializeSocket();
-        bluetoothManager.connectSocket();
-        bluetoothManager.initializeStreams();
-        bluetoothManager.start();
-    }
-
-    public void sendData(View view){
-        byte[] byteArr = {'B'};
-        bluetoothManager.write(byteArr);
-    }
+//    public void connectToPi(View view){
+//        bluetoothManager.initializeSocket();
+//        bluetoothManager.connectSocket();
+//        bluetoothManager.initializeStreams();
+//        bluetoothManager.start();
+//    }
+//
+//    public void sendData(View view){
+//        byte[] byteArr = {'B'};
+//        bluetoothManager.write(byteArr);
+//    }
 
     public void initializeViews() {
         buttonConnect = (Button) findViewById(R.id.buttonConnect);
@@ -199,14 +192,11 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     bytes = mmInStream.read(buffer);            //read bytes from input buffer
                     String readMessage = new String(buffer, 0, bytes);
-                    // Send the obtained bytes to the UI Activity via handler
-//                    bluetoothHandler.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
-
-                    Message msg = bluetoothHandler.obtainMessage();
+                    Message msg = btHandler.obtainMessage();
                     Bundle bundle = new Bundle();
                     bundle.putString("key", readMessage);
                     msg.setData(bundle);
-                    bluetoothHandler.sendMessage(msg);
+                    btHandler.sendMessage(msg);
 
                 } catch (IOException e) {
                     break;
@@ -227,6 +217,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    public class BluetoothHandler extends Handler {
+        public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+            String string = bundle.getString("key");
+            txtReceived.setText(string);
+        }
+    }
+
 }
 
 
