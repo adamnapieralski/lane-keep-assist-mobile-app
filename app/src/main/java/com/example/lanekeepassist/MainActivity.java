@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice btDevice = null;
     private BluetoothSocket btSocket = null;
 
-    private StringBuilder recDataString = new StringBuilder();
+//    private StringBuilder recDataString = new StringBuilder();
 
     private ConnectedThread mConnectedThread;
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     // String for MAC address
     private static final String deviceMAC = "DC:A6:32:3C:18:BE";
 
-    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+    NotificationManagerCompat notificationManagerCompat = null;
 
 
 
@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         initializeViews();
 
         createNotificationChannel();
+
+        notificationManagerCompat = NotificationManagerCompat.from(this);
 
         btHandler = new BluetoothHandler();
 
@@ -237,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = msg.getData();
             String string = bundle.getString("key");
             txtReceived.setText(string);
-            notificationManagerCompat.notify(0, notificationBuilder.build());
+//            notificationManagerCompat.notify(0, notificationBuilder.build());
         }
     }
 
