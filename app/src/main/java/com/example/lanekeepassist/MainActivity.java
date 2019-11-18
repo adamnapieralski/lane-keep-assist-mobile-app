@@ -14,6 +14,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonConnect, buttonSend;
     TextView txtReceived;
     EditText editTxtToSend;
+    ImageView imageView;
     Handler btHandler;
 
     private BluetoothAdapter btAdapter = null;
@@ -185,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         buttonSend = (Button) findViewById(R.id.buttonSendData);
         txtReceived = (TextView) findViewById(R.id.textReceived);
         editTxtToSend = (EditText) findViewById(R.id.editText);
+        imageView = (ImageView) findViewById(R.id.imageView);
     }
 
     //Checks that the Android device Bluetooth is available and prompts to be turned on if off
@@ -222,22 +228,63 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void run() {
-            byte[] buffer = new byte[256];
-            int bytes;
+//            byte[] buffer = new byte[512];
+//            int bytes;
+
+
+            byte[] buffer = null;
+            int numberOfBytes = 0;
+            int index=0;
+            boolean flag = true;
+
+
 
             // Keep looping to listen for received messages
-            while (true) {
-                try {
-                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
-                    String readMessage = new String(buffer, 0, bytes);
-                    Message msg = btHandler.obtainMessage();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("key", readMessage);
-                    msg.setData(bundle);
-                    btHandler.sendMessage(msg);
+//            while (true) {
+//                try {
+//                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
+//                    String readMessage = new String(buffer, 0, bytes);
+//                    Message msg = btHandler.obtainMessage();
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("key", readMessage);
+//                    msg.setData(bundle);
+//                    btHandler.sendMessage(msg);
+//
+//                } catch (IOException e) {
+//                    break;
+//                }
+//            }
 
-                } catch (IOException e) {
-                    break;
+            while (true) {
+                if (flag) {
+                    try {
+                        byte[] temp = new byte[mmInStream.available()];
+                        if(mmInStream.read(temp)>0)
+                        {
+                            numberOfBytes=Integer.parseInt(new String(temp,"UTF-8"));
+                            buffer=new byte[numberOfBytes];
+                            flag=false;
+                        }
+                    } catch (IOException e) {
+                        break;
+                    }
+                }
+                else {
+                    try {
+                        byte[] data=new byte[mmInStream.available()];
+                        int numbers=mmInStream.read(data);
+
+                        System.arraycopy(data,0,buffer,index,numbers);
+                        index=index+numbers;
+
+                        if(index == numberOfBytes)
+                        {
+                            btHandler.obtainMessage(0,numberOfBytes,-1,buffer).sendToTarget();
+                            flag = true;
+                        }
+                    } catch (IOException e) {
+                        break;
+                    }
                 }
             }
         }
@@ -258,13 +305,18 @@ public class MainActivity extends AppCompatActivity {
 
     public class BluetoothHandler extends Handler {
         public void handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
-            String string = bundle.getString("key");
-            txtReceived.setText(string);
+//            Bundle bundle = msg.getData();
+//            String string = bundle.getString("key");
+//            txtReceived.setText(string);
+//
+//            Notification notification = notificationBuilder.build();
+//            notificationManagerCompat.notify(0, notification);
+//            mediaPlayer.start();
 
-            Notification notification = notificationBuilder.build();
-            notificationManagerCompat.notify(0, notification);
-            mediaPlayer.start();
+            byte[] readBuff= (byte[]) msg.obj;
+            Bitmap bitmap=BitmapFactory.decodeByteArray(readBuff,0,msg.arg1);
+
+            imageView.setImageBitmap(bitmap);
         }
     }
 
