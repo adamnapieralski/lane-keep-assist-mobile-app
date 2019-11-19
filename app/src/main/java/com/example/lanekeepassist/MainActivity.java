@@ -1,36 +1,22 @@
 package com.example.lanekeepassist;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -39,10 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String CHANNEL_ID = "LKA";
 
-    Button buttonConnect, buttonSend;
+    Button buttonConnect, buttonSend, buttonSettings;
     TextView txtReceived;
     EditText editTxtToSend;
-    ImageView imageView;
     BluetoothHandler btHandler;
 
     private NotificationManagerCompat notificationManagerCompat = null;
@@ -64,10 +49,13 @@ public class MainActivity extends AppCompatActivity {
         notificationManagerCompat = NotificationManagerCompat.from(this);
 
         btHandler = new BluetoothHandler();
+        btHandler.setNotificationBuilder(notificationBuilder);
+        btHandler.setNotificationManagerCompat(notificationManagerCompat);
+        btHandler.setMainActivity(this);
 
         mBluetoothConnection = new BluetoothConnection();
         mBluetoothConnection.setHandler(btHandler);
-        mBluetoothConnection.setmMainActivity(this);
+        mBluetoothConnection.setMainActivity(this);
 
         mBluetoothConnection.checkState();
 
@@ -91,6 +79,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Sent text", Toast.LENGTH_SHORT).show();
             }
         });
+
+        buttonSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -103,121 +99,13 @@ public class MainActivity extends AppCompatActivity {
     public void initializeViews() {
         buttonConnect = (Button) findViewById(R.id.buttonConnect);
         buttonSend = (Button) findViewById(R.id.buttonSendData);
+        buttonSettings = (Button) findViewById(R.id.buttonSettings);
         txtReceived = (TextView) findViewById(R.id.textReceived);
         editTxtToSend = (EditText) findViewById(R.id.editText);
-        imageView = (ImageView) findViewById(R.id.imageView);
     }
 
-    private class ConnectedThread extends Thread {
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
-
-        //creation of the connect thread
-        public ConnectedThread(BluetoothSocket socket) {
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            try {
-                //Create I/O streams for connection
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
-
-            mmInStream = tmpIn;
-            mmOutStream = tmpOut;
-        }
-
-        public void run() {
-//            byte[] buffer = new byte[512];
-//            int bytes;
-
-
-            byte[] buffer = null;
-            int numberOfBytes = 0;
-            int index=0;
-            boolean flag = true;
-
-
-
-            // Keep looping to listen for received messages
-//            while (true) {
-//                try {
-//                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
-//                    String readMessage = new String(buffer, 0, bytes);
-//                    Message msg = btHandler.obtainMessage();
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("key", readMessage);
-//                    msg.setData(bundle);
-//                    btHandler.sendMessage(msg);
-//
-//                } catch (IOException e) {
-//                    break;
-//                }
-//            }
-
-            while (true) {
-                if (flag) {
-                    try {
-                        byte[] temp = new byte[mmInStream.available()];
-                        if(mmInStream.read(temp)>0)
-                        {
-                            numberOfBytes=Integer.parseInt(new String(temp,"UTF-8"));
-                            buffer=new byte[numberOfBytes];
-                            flag=false;
-                        }
-                    } catch (IOException e) {
-                        break;
-                    }
-                }
-                else {
-                    try {
-                        byte[] data=new byte[mmInStream.available()];
-                        int numbers=mmInStream.read(data);
-
-                        System.arraycopy(data,0,buffer,index,numbers);
-                        index=index+numbers;
-
-                        if(index == numberOfBytes)
-                        {
-                            btHandler.obtainMessage(0,numberOfBytes,-1,buffer).sendToTarget();
-                            flag = true;
-                        }
-                    } catch (IOException e) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        //write method
-        public void write(String input) {
-            byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
-            try {
-                mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
-            } catch (IOException e) {
-                //if you cannot write, close the application
-                Toast.makeText(getBaseContext(), "Connection Failure", Toast.LENGTH_LONG).show();
-                finish();
-
-            }
-        }
-    }
-
-    public class BluetoothHandler extends Handler {
-        public void handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
-            String string = bundle.getString("key");
-            txtReceived.setText(string);
-
-            Notification notification = notificationBuilder.build();
-            notificationManagerCompat.notify(0, notification);
-//            mediaPlayer.start();
-
-//            byte[] readBuff= (byte[]) msg.obj;
-//            Bitmap bitmap=BitmapFactory.decodeByteArray(readBuff,0,msg.arg1);
-//
-//            imageView.setImageBitmap(bitmap);
-        }
+    public void setTxtReceived(String str) {
+        txtReceived.setText(str);
     }
 
     private void createNotificationChannel() {
