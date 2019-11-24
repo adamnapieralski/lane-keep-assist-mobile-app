@@ -6,8 +6,11 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -23,15 +26,22 @@ public class BluetoothConnection extends Thread {
     // SPP UUID service - this should work for most devices
     private static final UUID BTMODULEUUID = UUID.fromString("94f39d29-7d6d-437d-973b-fba39e49d4ee");
 
-    private BluetoothAdapter btAdapter = null;
-    private BluetoothDevice btDevice = null;
+    private BluetoothAdapter btAdapter;
+    private BluetoothDevice btDevice;
     private BluetoothSocket btSocket = null;
 
     private Activity mMainActivity;
-    private MainActivity.BluetoothHandler mHandler;
+    private BluetoothHandler mHandler;
 
     private InputStream mmInStream = null;
     private OutputStream mmOutStream = null;
+
+    static final int STATE_ASSISTANT_RECEIVING = 1;
+    static final int STATE_IMAGE_RECEIVING = 2;
+    static final int STATE_SETTINGS_RECEIVING = 3;
+
+    private int state;
+
 
     public BluetoothConnection() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -63,6 +73,8 @@ public class BluetoothConnection extends Thread {
 
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
+
+        state = STATE_ASSISTANT_RECEIVING;
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -71,23 +83,72 @@ public class BluetoothConnection extends Thread {
 
     @Override
     public void run() {
-        byte[] buffer = new byte[256];
+        byte[] buffer = new byte[512];
         int bytes;
-        // Keep looping to listen for received messages
-            while (true) {
-                try {
-                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
-                    String readMessage = new String(buffer, 0, bytes);
-                    Message msg = mHandler.obtainMessage();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("key", readMessage);
-                    msg.setData(bundle);
-                    mHandler.sendMessage(msg);
 
-                } catch (IOException e) {
+        byte[] imgBuffer = null;
+        int numberOfBytes = 0;
+        int index=0;
+        boolean imgFlag = true;
+
+        // Keep looping to listen for received messages
+        while (true) {
+            switch (state) {
+                case STATE_ASSISTANT_RECEIVING:
+                    try {
+                        bytes = mmInStream.read(buffer);            //read bytes from input buffer
+                        String readMessage = new String(buffer, 0, bytes);
+                        Message msg = mHandler.obtainMessage(BluetoothHandler.STATE_ASSISTANT_RECEIVED);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("key", readMessage);
+                        msg.setData(bundle);
+
+                        mHandler.sendMessage(msg);
+
+                    } catch (IOException e) {
+                        break;
+                    }
                     break;
-                }
+
+                case STATE_IMAGE_RECEIVING:
+                    if (imgFlag) {
+                        try {
+                            byte[] temp = new byte[mmInStream.available()];
+                            if(mmInStream.read(temp)>0)
+                            {
+                                numberOfBytes=Integer.parseInt(new String(temp,"UTF-8"));
+                                imgBuffer=new byte[numberOfBytes];
+                                imgFlag=false;
+                            }
+                        } catch (IOException e) {
+                            break;
+                        }
+                    }
+                    else {
+                        try {
+                            byte[] data=new byte[mmInStream.available()];
+                            int numbers=mmInStream.read(data);
+
+                            System.arraycopy(data,0,imgBuffer,index,numbers);
+                            index=index+numbers;
+
+                            if(index == numberOfBytes)
+                            {
+                                mHandler.obtainMessage(BluetoothHandler.STATE_IMAGE_RECEIVED,numberOfBytes,-1,imgBuffer).sendToTarget();
+                                imgFlag = true;
+                                state = 2;
+                            }
+                        } catch (IOException e) {
+                            break;
+                        }
+                    }
+                    break;
+
+                case STATE_SETTINGS_RECEIVING:
+
+                     break;
             }
+        }
     }
 
     //write method
@@ -115,11 +176,11 @@ public class BluetoothConnection extends Thread {
         }
     }
 
-    public void setHandler(MainActivity.BluetoothHandler handler) {
+    public void setHandler(BluetoothHandler handler) {
         mHandler = handler;
     }
 
-    public void setmMainActivity(Activity activity) {
+    public void setMainActivity(Activity activity) {
         mMainActivity = activity;
     }
 
