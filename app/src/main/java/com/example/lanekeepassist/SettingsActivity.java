@@ -72,6 +72,14 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("settings", "");
+        setResult(0, i);
+        finish();
+    }
+
     private void initializeViews() {
         imageView = findViewById(R.id.imageView);
         et_TLx = findViewById(R.id.et_TLx);

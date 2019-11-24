@@ -103,7 +103,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         //Retrieve data in the intent
         String settings = data.getStringExtra("settings");
-        mBluetoothConnection.write(settings);
+        if (mBluetoothConnection.isConnected() && !settings.isEmpty()) {
+            mBluetoothConnection.write(settings);
+        }
     }
 
     public void initializeViews() {
