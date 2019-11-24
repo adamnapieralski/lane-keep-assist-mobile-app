@@ -6,8 +6,11 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -38,6 +41,7 @@ public class BluetoothConnection extends Thread {
     static final int STATE_SETTINGS_RECEIVING = 3;
 
     private int state;
+
 
     public BluetoothConnection() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();

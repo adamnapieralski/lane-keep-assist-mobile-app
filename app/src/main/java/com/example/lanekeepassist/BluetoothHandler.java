@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Notification;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -23,6 +25,7 @@ public class BluetoothHandler extends Handler {
 
     private MainActivity mMainActivity;
 
+    MediaPlayer mediaPlayer;
 
     public void handleMessage(Message msg) {
 
@@ -33,7 +36,7 @@ public class BluetoothHandler extends Handler {
                 mMainActivity.setTxtReceived(string);
                 Notification notification = notificationBuilder.build();
                 notificationManagerCompat.notify(0, notification);
-                //play mediaplayer
+                mediaPlayer.start();
                 break;
 
             case STATE_IMAGE_RECEIVED:
@@ -60,6 +63,10 @@ public class BluetoothHandler extends Handler {
 
     void setMainActivity(MainActivity mainActivity) {
         mMainActivity = mainActivity;
+    }
+
+    void setMediaPlayer(MediaPlayer mp) {
+        mediaPlayer = mp;
     }
 
 //    void setSetttingsActivity(Activity settingsActivity) {

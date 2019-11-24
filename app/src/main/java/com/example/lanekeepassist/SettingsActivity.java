@@ -3,6 +3,7 @@ package com.example.lanekeepassist;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -19,7 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     ImageView imageView;
     EditText et_TLx, et_TLy, et_TRx, et_TRy, et_BLx, et_BLy, et_BRx, et_BRy;
-    Button b_update;
+    Button b_update, b_save;
 
     private Canvas mCanvas;
     private Paint mPaintRed = new Paint();
@@ -44,6 +45,31 @@ public class SettingsActivity extends AppCompatActivity {
                 updateImagePoints();
             }
         });
+
+        b_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext(), MainActivity.class);
+
+                String TLx = et_TLx.getText().toString();
+                String TLy = et_TLy.getText().toString();
+                String TRx = et_TRx.getText().toString();
+                String TRy = et_TRy.getText().toString();
+                String BLx = et_BLx.getText().toString();
+                String BLy = et_BLy.getText().toString();
+                String BRx = et_BRx.getText().toString();
+                String BRy = et_BRy.getText().toString();
+
+                String del = " ";
+
+                String settings = "s" + del + TLx + del + TLy + del + TRx + del + TRy + del
+                        + BLx + del + BLy + del + BRx + del + BRy;
+
+                i.putExtra("settings", settings);
+                setResult(0, i);
+                finish();
+            }
+        });
     }
 
     private void initializeViews() {
@@ -57,6 +83,8 @@ public class SettingsActivity extends AppCompatActivity {
         et_BRx = findViewById(R.id.et_BRx);
         et_BRy = findViewById(R.id.et_BRy);
         b_update = findViewById(R.id.b_update);
+        b_save = findViewById(R.id.b_save);
+
     }
 
     private void updateImagePoints() {

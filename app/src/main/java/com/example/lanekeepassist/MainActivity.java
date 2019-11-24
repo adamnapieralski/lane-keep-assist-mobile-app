@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         btHandler.setMainActivity(this);
 
         mBluetoothConnection = new BluetoothConnection();
+        mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.alert1);
+        btHandler.setMediaPlayer(mediaPlayer);
+
         mBluetoothConnection.setHandler(btHandler);
         mBluetoothConnection.setMainActivity(this);
 
@@ -62,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.alert1);
 
                 mBluetoothConnection.connect();
                 mBluetoothConnection.start();
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), SettingsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
     }
@@ -94,6 +96,14 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onDestroy();
         mBluetoothConnection.close();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Retrieve data in the intent
+        String settings = data.getStringExtra("settings");
+        mBluetoothConnection.write(settings);
     }
 
     public void initializeViews() {
