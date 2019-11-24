@@ -189,4 +189,9 @@ public class BluetoothConnection extends Thread {
             btSocket.close();
         } catch (IOException e) { }
     }
+
+    public boolean isConnected() {
+        if (btSocket == null) return false;
+        else return btSocket.isConnected();
+    }
 }
