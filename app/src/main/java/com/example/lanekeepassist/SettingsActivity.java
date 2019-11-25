@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,6 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
     private Paint mPaintRed = new Paint();
     private Bitmap orgBitmap, editBitmap;
 
+    private BluetoothHandler btHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +37,9 @@ public class SettingsActivity extends AppCompatActivity {
         initializeViews();
 
         mPaintRed.setColor(Color.RED);
+
+        btHandler = new BluetoothHandler();
+        btHandler.setSetttingsActivity(this);
 
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inMutable = true;

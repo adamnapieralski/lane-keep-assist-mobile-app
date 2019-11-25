@@ -4,20 +4,15 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
-import java.util.logging.Handler;
 
 public class BluetoothConnection extends Thread {
 
@@ -40,7 +35,7 @@ public class BluetoothConnection extends Thread {
     static final int STATE_IMAGE_RECEIVING = 2;
     static final int STATE_SETTINGS_RECEIVING = 3;
 
-    private int state;
+    private int mState;
 
 
     public BluetoothConnection() {
@@ -74,7 +69,7 @@ public class BluetoothConnection extends Thread {
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
 
-        state = STATE_ASSISTANT_RECEIVING;
+        mState = STATE_ASSISTANT_RECEIVING;
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -93,7 +88,7 @@ public class BluetoothConnection extends Thread {
 
         // Keep looping to listen for received messages
         while (true) {
-            switch (state) {
+            switch (mState) {
                 case STATE_ASSISTANT_RECEIVING:
                     try {
                         bytes = mmInStream.read(buffer);            //read bytes from input buffer
@@ -136,7 +131,7 @@ public class BluetoothConnection extends Thread {
                             {
                                 mHandler.obtainMessage(BluetoothHandler.STATE_IMAGE_RECEIVED,numberOfBytes,-1,imgBuffer).sendToTarget();
                                 imgFlag = true;
-                                state = 2;
+                                mState = STATE_SETTINGS_RECEIVING;
                             }
                         } catch (IOException e) {
                             break;
@@ -145,8 +140,21 @@ public class BluetoothConnection extends Thread {
                     break;
 
                 case STATE_SETTINGS_RECEIVING:
+                    try {
+                        bytes = mmInStream.read(buffer);            //read bytes from input buffer
+                        String readMessage = new String(buffer, 0, bytes);
+                        Message msg = mHandler.obtainMessage(BluetoothHandler.STATE_SETTINGS_RECEIVED);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("settings", readMessage);
+                        msg.setData(bundle);
 
-                     break;
+                        mHandler.sendMessage(msg);
+                        mState = STATE_ASSISTANT_RECEIVING;
+
+                    } catch (IOException e) {
+                        break;
+                    }
+                    break;
             }
         }
     }
@@ -193,5 +201,9 @@ public class BluetoothConnection extends Thread {
     public boolean isConnected() {
         if (btSocket == null) return false;
         else return btSocket.isConnected();
+    }
+
+    protected void changeState(int state) {
+        mState = state;
     }
 }

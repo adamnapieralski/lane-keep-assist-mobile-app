@@ -1,6 +1,5 @@
 package com.example.lanekeepassist;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,7 +7,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -24,6 +22,8 @@ public class BluetoothHandler extends Handler {
     NotificationManagerCompat notificationManagerCompat;
 
     private MainActivity mMainActivity;
+
+    private SettingsActivity mSettingsActivity;
 
     MediaPlayer mediaPlayer;
 
@@ -42,11 +42,14 @@ public class BluetoothHandler extends Handler {
             case STATE_IMAGE_RECEIVED:
                 byte[] readBuff= (byte[]) msg.obj;
                 Bitmap bitmap= BitmapFactory.decodeByteArray(readBuff,0,msg.arg1);
-
-//                imageView.setImageBitmap(bitmap);
+                mSettingsActivity.imageView.setImageBitmap(bitmap);
                 break;
 
             case STATE_SETTINGS_RECEIVED:
+                Bundle bundleSettings = msg.getData();
+                String settings = bundleSettings.getString("settings");
+                String[] data = settings.split(" ");
+                mSettingsActivity.et_BLx.setText(data[1]);
                 break;
         }
 
@@ -69,9 +72,9 @@ public class BluetoothHandler extends Handler {
         mediaPlayer = mp;
     }
 
-//    void setSetttingsActivity(Activity settingsActivity) {
-//        mSettingsActivity = settingsActivity;
-//    }
+    void setSetttingsActivity(SettingsActivity settingsActivity) {
+        mSettingsActivity = settingsActivity;
+    }
 
 
 }
