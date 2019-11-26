@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -109,12 +110,21 @@ public class BluetoothConnection extends Thread {
                     if (imgFlag) {
                         try {
                             byte[] temp = new byte[mmInStream.available()];
+//                            bytes = mmInStream.read(buffer);
+//                            String readMessage = new String(buffer, 0, bytes);
                             if(mmInStream.read(temp)>0)
                             {
-                                numberOfBytes=Integer.parseInt(new String(temp,"UTF-8"));
+                                String str = new String(temp, "UTF-8");
+                                Log.i("BT_CONNECTION", str);
+                                numberOfBytes=Integer.parseInt(str);
+    //                            numberOfBytes=Integer.parseInt(readMessage);
+    //                            Log.d("BTconnection", Integer.toString(numberOfBytes));
+
                                 imgBuffer=new byte[numberOfBytes];
                                 imgFlag=false;
+                                break;
                             }
+
                         } catch (IOException e) {
                             break;
                         }
@@ -123,6 +133,7 @@ public class BluetoothConnection extends Thread {
                         try {
                             byte[] data=new byte[mmInStream.available()];
                             int numbers=mmInStream.read(data);
+                            Log.d("BTconnection", Integer.toString(numbers));
 
                             System.arraycopy(data,0,imgBuffer,index,numbers);
                             index=index+numbers;

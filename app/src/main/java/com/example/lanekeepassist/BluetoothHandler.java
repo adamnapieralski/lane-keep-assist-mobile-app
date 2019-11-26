@@ -1,6 +1,7 @@
 package com.example.lanekeepassist;
 
 import android.app.Notification;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -27,6 +28,8 @@ public class BluetoothHandler extends Handler {
 
     MediaPlayer mediaPlayer;
 
+    Intent settingsIntent;
+
     public void handleMessage(Message msg) {
 
         switch (msg.what) {
@@ -41,15 +44,24 @@ public class BluetoothHandler extends Handler {
 
             case STATE_IMAGE_RECEIVED:
                 byte[] readBuff= (byte[]) msg.obj;
-                Bitmap bitmap= BitmapFactory.decodeByteArray(readBuff,0,msg.arg1);
-                mSettingsActivity.imageView.setImageBitmap(bitmap);
+                mMainActivity.setImageByteArray(readBuff);
+                settingsIntent = new Intent(mMainActivity, SettingsActivity.class);
+                settingsIntent.putExtra("ImageByteArray", readBuff);
+//                Intent intent = new Intent(mMainActivity, SettingsActivity.class);
+//                intent.putExtra("ImageByteArray", readBuff);
+//                mMainActivity.startActivityForResult(intent, 0);
+//                Bitmap bitmap= BitmapFactory.decodeByteArray(readBuff,0,msg.arg1);
+//                mMainActivity.setImageBitmap(bitmap);
+//                mSettingsActivity.imageView.setImageBitmap(bitmap);
                 break;
 
             case STATE_SETTINGS_RECEIVED:
                 Bundle bundleSettings = msg.getData();
                 String settings = bundleSettings.getString("settings");
-                String[] data = settings.split(" ");
-                mSettingsActivity.et_BLx.setText(data[1]);
+//                String[] data = settings.split(" ");
+//                mSettingsActivity.et_BLx.setText(data[1]);
+                settingsIntent.putExtra("Settings", settings);
+                mMainActivity.startActivityForResult(settingsIntent, 0);
                 break;
         }
 
@@ -72,7 +84,7 @@ public class BluetoothHandler extends Handler {
         mediaPlayer = mp;
     }
 
-    void setSetttingsActivity(SettingsActivity settingsActivity) {
+    void setSettingsActivity(SettingsActivity settingsActivity) {
         mSettingsActivity = settingsActivity;
     }
 

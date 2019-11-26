@@ -9,6 +9,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
 
     private BluetoothConnection mBluetoothConnection;
+
+    public Bitmap imageBitmap = null;
+    public byte[] imageByteArray;
 
 
     @Override
@@ -82,12 +86,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         buttonSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
-                startActivityForResult(intent, 0);
-//                mBluetoothConnection.changeState(BluetoothConnection.STATE_IMAGE_RECEIVING);
+//                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
+//                intent.putExtra("ImageByteArray", imageByteArray);
+//                startActivityForResult(intent, 0);
+                mBluetoothConnection.changeState(BluetoothConnection.STATE_IMAGE_RECEIVING);
+                mBluetoothConnection.write("open_settings");
+                buttonSettings.setEnabled(false);
             }
         });
     }
@@ -102,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        buttonSettings.setEnabled(true);
         //Retrieve data in the intent
         String settings = data.getStringExtra("settings");
         if (mBluetoothConnection.isConnected() && !settings.isEmpty()) {
@@ -110,15 +120,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializeViews() {
-        buttonConnect = (Button) findViewById(R.id.buttonConnect);
-        buttonSend = (Button) findViewById(R.id.buttonSendData);
-        buttonSettings = (Button) findViewById(R.id.buttonSettings);
-        txtReceived = (TextView) findViewById(R.id.textReceived);
-        editTxtToSend = (EditText) findViewById(R.id.editText);
+        buttonConnect = findViewById(R.id.buttonConnect);
+        buttonSend = findViewById(R.id.buttonSendData);
+        buttonSettings = findViewById(R.id.buttonSettings);
+        txtReceived = findViewById(R.id.textReceived);
+        editTxtToSend = findViewById(R.id.editText);
     }
 
     public void setTxtReceived(String str) {
         txtReceived.setText(str);
+    }
+
+    public void setImageByteArray(byte[] ba) {
+        imageByteArray = ba;
     }
 
     private void createNotificationChannel() {
