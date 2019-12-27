@@ -142,6 +142,7 @@ public class BluetoothConnection extends Thread {
                             {
                                 mHandler.obtainMessage(BluetoothHandler.STATE_IMAGE_RECEIVED,numberOfBytes,-1,imgBuffer).sendToTarget();
                                 imgFlag = true;
+                                index = 0;
                                 mState = STATE_SETTINGS_RECEIVING;
                             }
                         } catch (IOException e) {
@@ -152,6 +153,7 @@ public class BluetoothConnection extends Thread {
 
                 case STATE_SETTINGS_RECEIVING:
                     try {
+                        Log.d("BTconnection", "STATE_SETTINGS_RECEIVING");
                         bytes = mmInStream.read(buffer);            //read bytes from input buffer
                         String readMessage = new String(buffer, 0, bytes);
                         Message msg = mHandler.obtainMessage(BluetoothHandler.STATE_SETTINGS_RECEIVED);

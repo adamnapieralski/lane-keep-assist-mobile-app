@@ -57,6 +57,8 @@ public class SettingsActivity extends AppCompatActivity {
 //        orgBitmap = BitmapFactory.decodeResource(getResources(), R.raw.snap1, opt);
         orgBitmap = bitmap.copy(bitmap.getConfig(), true);
 
+        updateImagePoints();
+
 
         b_update.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,15 +165,16 @@ public class SettingsActivity extends AppCompatActivity {
 //        et_TRy.setText(Integer.parseInt(val[6]));
 //        et_TLx.setText(Integer.parseInt(val[7]));
 //        et_TLy.setText(Integer.parseInt(val[8]));
-
-        et_BLx.setText(val[1]);
-        et_BLy.setText(val[2]);
-        et_BRx.setText(val[3]);
-        et_BRy.setText(val[4]);
-        et_TRx.setText(val[5]);
-        et_TRy.setText(val[6]);
-        et_TLx.setText(val[7]);
-        et_TLy.setText(val[8]);
+        if (val.length == 9) {
+            et_BLx.setText(val[1]);
+            et_BLy.setText(val[2]);
+            et_BRx.setText(val[3]);
+            et_BRy.setText(val[4]);
+            et_TRx.setText(val[5]);
+            et_TRy.setText(val[6]);
+            et_TLx.setText(val[7]);
+            et_TLy.setText(val[8]);
+        }
     }
 
 
