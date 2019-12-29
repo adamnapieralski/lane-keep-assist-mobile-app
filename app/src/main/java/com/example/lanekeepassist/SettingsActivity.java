@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -20,9 +21,9 @@ import android.widget.TextView;
 public class SettingsActivity extends AppCompatActivity {
 
     ImageView imageView;
-    EditText et_TLx, et_TLy, et_TRx, et_TRy, et_BLx, et_BLy, et_BRx, et_BRy;
+    EditText et_TLx, et_TLy, et_TRx, et_TRy, et_BLx, et_BLy, et_BRx, et_BRy,
+            et_RGB_R, et_HLS_L, et_LAB_L;
     Button b_update, b_save;
-    TextView textView;
 
     private Canvas mCanvas;
     private Paint mPaintRed = new Paint();
@@ -41,21 +42,20 @@ public class SettingsActivity extends AppCompatActivity {
         byte[] imageByteArray = i.getByteArrayExtra("ImageByteArray");
         Bitmap bitmap= BitmapFactory.decodeByteArray(imageByteArray,0,imageByteArray.length);
 
+        orgBitmap = bitmap.copy(bitmap.getConfig(), true);
+
         String settingPoints = i.getStringExtra("Settings");
 
         handleSettingsReceived(settingPoints);
-
-        textView.setText(settingPoints);
 
         mPaintRed.setColor(Color.RED);
 
         btHandler = new BluetoothHandler();
         btHandler.setSettingsActivity(this);
 
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inMutable = true;
+//        BitmapFactory.Options opt = new BitmapFactory.Options();
+//        opt.inMutable = true;
 //        orgBitmap = BitmapFactory.decodeResource(getResources(), R.raw.snap1, opt);
-        orgBitmap = bitmap.copy(bitmap.getConfig(), true);
 
         updateImagePoints();
 
@@ -81,10 +81,15 @@ public class SettingsActivity extends AppCompatActivity {
                 String BRx = et_BRx.getText().toString();
                 String BRy = et_BRy.getText().toString();
 
+                String RGB_R = et_RGB_R.getText().toString();
+                String HLS_L = et_HLS_L.getText().toString();
+                String LAB_L = et_LAB_L.getText().toString();
+
                 String del = " ";
 
                 String settings = "save_settings" + del + BLx + del + BLy + del + BRx + del + BRy
-                        + del + TRx + del + TRy + del + TLx + del + TLy;
+                        + del + TRx + del + TRy + del + TLx + del + TLy
+                        + del + RGB_R + del + HLS_L + del + LAB_L;
 
                 i.putExtra("settings", settings);
                 setResult(0, i);
@@ -111,11 +116,13 @@ public class SettingsActivity extends AppCompatActivity {
         et_BLy = findViewById(R.id.et_BLy);
         et_BRx = findViewById(R.id.et_BRx);
         et_BRy = findViewById(R.id.et_BRy);
+
+        et_RGB_R = findViewById(R.id.et_RGB_R);
+        et_HLS_L = findViewById(R.id.et_HLS_L);
+        et_LAB_L = findViewById(R.id.et_LAB_L);
+
         b_update = findViewById(R.id.b_update);
         b_save = findViewById(R.id.b_save);
-
-        textView = findViewById(R.id.textView5);
-
     }
 
     private void updateImagePoints() {
@@ -157,15 +164,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void handleSettingsReceived(String settings) {
         String[] val = settings.split(" ");
-//        et_BLx.setText(Integer.parseInt(val[1]));
-//        et_BLy.setText(Integer.parseInt(val[2]));
-//        et_BRx.setText(Integer.parseInt(val[3]));
-//        et_BRy.setText(Integer.parseInt(val[4]));
-//        et_TRx.setText(Integer.parseInt(val[5]));
-//        et_TRy.setText(Integer.parseInt(val[6]));
-//        et_TLx.setText(Integer.parseInt(val[7]));
-//        et_TLy.setText(Integer.parseInt(val[8]));
-        if (val.length == 9) {
+
+        if (val.length == 12) {
             et_BLx.setText(val[1]);
             et_BLy.setText(val[2]);
             et_BRx.setText(val[3]);
@@ -174,6 +174,10 @@ public class SettingsActivity extends AppCompatActivity {
             et_TRy.setText(val[6]);
             et_TLx.setText(val[7]);
             et_TLy.setText(val[8]);
+
+            et_RGB_R.setText(val[9]);
+            et_HLS_L.setText(val[10]);
+            et_LAB_L.setText(val[11]);
         }
     }
 

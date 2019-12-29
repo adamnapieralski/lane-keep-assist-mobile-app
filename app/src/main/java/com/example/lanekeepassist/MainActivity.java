@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
                 mBluetoothConnection.connect();
                 mBluetoothConnection.start();
-                mBluetoothConnection.write("start");
+
+//                mBluetoothConnection.write("start");
             }
         });
 
@@ -80,9 +81,13 @@ public class MainActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+            if (mBluetoothConnection.isConnected()) {
                 String content = editTxtToSend.getText().toString();
                 mBluetoothConnection.write(content);
                 Toast.makeText(getBaseContext(), "Sent text", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), "Device not connected", Toast.LENGTH_SHORT).show();
+            }
             }
         });
 
@@ -94,9 +99,13 @@ public class MainActivity extends AppCompatActivity {
 //                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
 //                intent.putExtra("ImageByteArray", imageByteArray);
 //                startActivityForResult(intent, 0);
+            if (mBluetoothConnection.isConnected()) {
                 mBluetoothConnection.changeState(BluetoothConnection.STATE_IMAGE_RECEIVING);
                 mBluetoothConnection.write("open_settings");
                 buttonSettings.setEnabled(false);
+            } else {
+                Toast.makeText(getBaseContext(), "Device not connected", Toast.LENGTH_SHORT).show();
+            }
             }
         });
     }
