@@ -54,6 +54,7 @@ public class BluetoothConnection extends Thread {
         try {
             btSocket.connect();
         } catch (IOException e) {
+            Toast.makeText(mMainActivity, "Connection failed", Toast.LENGTH_LONG).show();
             try {
                 btSocket.close();
             } catch (IOException e2) { }
@@ -65,7 +66,9 @@ public class BluetoothConnection extends Thread {
             //Create I/O streams for connection
             tmpIn = btSocket.getInputStream();
             tmpOut = btSocket.getOutputStream();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+            Toast.makeText(mMainActivity, "Streams creation failed", Toast.LENGTH_LONG).show();
+        }
 
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
@@ -116,7 +119,11 @@ public class BluetoothConnection extends Thread {
                             {
                                 String str = new String(temp, "UTF-8");
                                 Log.i("BT_CONNECTION", str);
-                                numberOfBytes=Integer.parseInt(str);
+                                try {
+                                    numberOfBytes=Integer.parseInt(str);
+                                } catch (NumberFormatException e) {
+                                    numberOfBytes = 0;
+                                }
     //                            numberOfBytes=Integer.parseInt(readMessage);
     //                            Log.d("BTconnection", Integer.toString(numberOfBytes));
 
