@@ -35,15 +35,25 @@ public class BluetoothHandler extends Handler {
         switch (msg.what) {
             case STATE_ASSISTANT_RECEIVED:
                 Bundle bundle = msg.getData();
-                String string = bundle.getString("key");
-                if (string.matches("^[a-zA-Z0-9]*$")) {
-                    mMainActivity.setTxtReceived(string);
-                    if (string == "alert") {
-                        Notification notification = notificationBuilder.build();
-                        notificationManagerCompat.notify(0, notification);
-                        mediaPlayer.start();
+                String string = bundle.getString("assistant");
+                String[] vals = string.split(" ");
+                if (vals.length == 3 && vals[0].equals("alert")) {
+                    if (vals[1].equals("R")) {
+                        notificationBuilder.setContentText("Off " + vals[2] + " m to the right");
+                    } else {
+                        notificationBuilder.setContentText("Off " + vals[2] + " m to the left");
+
                     }
+                    Notification notification = notificationBuilder.build();
+                    notificationManagerCompat.notify(0, notification);
+                    mediaPlayer.start();
                 }
+//                if (string.matches("^[a-zA-Z0-9]*$")) {
+////                    mMainActivity.setTxtReceived(string);
+//                    if (string.equals("alert")) {
+//
+//                    }
+//                }
                 break;
 
             case STATE_IMAGE_RECEIVED:

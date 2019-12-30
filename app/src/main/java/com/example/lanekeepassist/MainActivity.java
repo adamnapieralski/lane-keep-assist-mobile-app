@@ -22,13 +22,11 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_ENABLE_BT = 1;
-
     public static final String CHANNEL_ID = "LKA";
 
     Button buttonConnect, buttonSend, buttonSettings;
-    TextView txtReceived;
-    EditText editTxtToSend;
+//    TextView txtReceived;
+//    EditText editTxtToSend;
     BluetoothHandler btHandler;
 
     private NotificationManagerCompat notificationManagerCompat = null;
@@ -78,18 +76,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        buttonSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            if (mBluetoothConnection.isConnected()) {
-                String content = editTxtToSend.getText().toString();
-                mBluetoothConnection.write(content);
-                Toast.makeText(getBaseContext(), "Sent text", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getBaseContext(), "Device not connected", Toast.LENGTH_SHORT).show();
-            }
-            }
-        });
+//        buttonSend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            if (mBluetoothConnection.isConnected()) {
+//                String content = editTxtToSend.getText().toString();
+//                mBluetoothConnection.write(content);
+//                Toast.makeText(getBaseContext(), "Sent text", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Toast.makeText(getBaseContext(), "Device not connected", Toast.LENGTH_SHORT).show();
+//            }
+//            }
+//        });
 
 
 
@@ -130,15 +128,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeViews() {
         buttonConnect = findViewById(R.id.buttonConnect);
-        buttonSend = findViewById(R.id.buttonSendData);
+//        buttonSend = findViewById(R.id.buttonSendData);
         buttonSettings = findViewById(R.id.buttonSettings);
-        txtReceived = findViewById(R.id.textReceived);
-        editTxtToSend = findViewById(R.id.editText);
+//        txtReceived = findViewById(R.id.textReceived);
+//        editTxtToSend = findViewById(R.id.editText);
     }
 
-    public void setTxtReceived(String str) {
-        txtReceived.setText(str);
-    }
+//    public void setTxtReceived(String str) {
+//        txtReceived.setText(str);
+//    }
 
     public void setImageByteArray(byte[] ba) {
         imageByteArray = ba;
@@ -163,12 +161,11 @@ public class MainActivity extends AppCompatActivity {
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
             MainActivity.this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_drive_eta_black_24dp)
-            .setContentTitle("LKA notification")
-            .setContentText("Much longer text that cannot fit one line...")
+            .setContentTitle("Lane Departure Warning")
+//            .setContentText("")
             .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE) //Important for heads-up notification
             .setPriority(Notification.PRIORITY_MAX)
-            .setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText("Much longer text that cannot fit one line..."));
+            .setStyle(new NotificationCompat.BigTextStyle());
 }
 
 

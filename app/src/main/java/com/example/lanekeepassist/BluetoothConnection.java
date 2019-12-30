@@ -73,6 +73,8 @@ public class BluetoothConnection extends Thread {
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
 
+
+
         mState = STATE_ASSISTANT_RECEIVING;
     }
 
@@ -99,7 +101,7 @@ public class BluetoothConnection extends Thread {
                         String readMessage = new String(buffer, 0, bytes);
                         Message msg = mHandler.obtainMessage(BluetoothHandler.STATE_ASSISTANT_RECEIVED);
                         Bundle bundle = new Bundle();
-                        bundle.putString("key", readMessage);
+                        bundle.putString("assistant", readMessage);
                         msg.setData(bundle);
 
                         mHandler.sendMessage(msg);
