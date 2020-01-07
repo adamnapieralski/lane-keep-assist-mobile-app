@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     Button buttonConnect, buttonSend, buttonSettings;
 //    TextView txtReceived;
 //    EditText editTxtToSend;
+    TextView offsetText;
+    ImageView offsetIcon;
     BluetoothHandler btHandler;
 
     private NotificationManagerCompat notificationManagerCompat = null;
@@ -130,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
         buttonConnect = findViewById(R.id.buttonConnect);
 //        buttonSend = findViewById(R.id.buttonSendData);
         buttonSettings = findViewById(R.id.buttonSettings);
+        offsetIcon = findViewById(R.id.offset_icon);
+        offsetText = findViewById(R.id.offset_text);
 //        txtReceived = findViewById(R.id.textReceived);
 //        editTxtToSend = findViewById(R.id.editText);
     }

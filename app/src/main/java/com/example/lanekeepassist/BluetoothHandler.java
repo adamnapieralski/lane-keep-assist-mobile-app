@@ -38,15 +38,45 @@ public class BluetoothHandler extends Handler {
                 String string = bundle.getString("assistant");
                 String[] vals = string.split(" ");
                 if (vals.length == 3 && vals[0].equals("alert")) {
-                    if (vals[1].equals("R")) {
-                        notificationBuilder.setContentText("Off " + vals[2] + " m to the right");
-                    } else {
-                        notificationBuilder.setContentText("Off " + vals[2] + " m to the left");
-
+                    mMainActivity.offsetText.setText(vals[2]);
+                    // insignificant offset - straight icon
+                    if (vals[1].equals("0")) {
+                        mMainActivity.offsetIcon.setImageResource(R.drawable.straight);
                     }
-                    Notification notification = notificationBuilder.build();
-                    notificationManagerCompat.notify(0, notification);
-                    mediaPlayer.start();
+                    // warning
+                    else if (vals[1].equals("1")) {
+                        //left
+                        if (Integer.parseInt(vals[2]) > 0)
+                            mMainActivity.offsetIcon.setImageResource(R.drawable.warn_left);
+                        //right
+                        else
+                            mMainActivity.offsetIcon.setImageResource(R.drawable.warn_right);
+                    }
+                    // alert
+                    else if (vals[1].equals("2")) {
+                        //left
+                        if (Integer.parseInt(vals[2]) > 0) {
+                            notificationBuilder.setContentText("Off " + vals[2] + " m to the left");
+                            mMainActivity.offsetIcon.setImageResource(R.drawable.alert_left);
+                        }
+                            //right
+                        else {
+                            notificationBuilder.setContentText("Off " + vals[2] + " m to the right");
+                            mMainActivity.offsetIcon.setImageResource(R.drawable.alert_right);
+                        }
+                        Notification notification = notificationBuilder.build();
+                        notificationManagerCompat.notify(0, notification);
+                        mediaPlayer.start();
+                    }
+//                    if (vals[1].equals("R")) {
+//                        notificationBuilder.setContentText("Off " + vals[2] + " m to the right");
+//                    } else {
+//                        notificationBuilder.setContentText("Off " + vals[2] + " m to the left");
+//
+//                    }
+//                    Notification notification = notificationBuilder.build();
+//                    notificationManagerCompat.notify(0, notification);
+//                    mediaPlayer.start();
                 }
 //                if (string.matches("^[a-zA-Z0-9]*$")) {
 ////                    mMainActivity.setTxtReceived(string);
