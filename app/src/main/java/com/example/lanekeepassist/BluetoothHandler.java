@@ -37,8 +37,14 @@ public class BluetoothHandler extends Handler {
                 Bundle bundle = msg.getData();
                 String string = bundle.getString("assistant");
                 String[] vals = string.split(" ");
-                if (vals.length == 3 && vals[0].equals("alert")) {
-                    mMainActivity.offsetText.setText(vals[2]);
+                if (vals.length == 4 && vals[0].equals("alert")) {
+                    //left
+                    if (vals[2].equals("L"))
+                        mMainActivity.offsetText.setText("<-- " + vals[3] + "m");
+                    //right
+                    else
+                        mMainActivity.offsetText.setText(vals[3] + "m -->");
+
                     // insignificant offset - straight icon
                     if (vals[1].equals("0")) {
                         mMainActivity.offsetIcon.setImageResource(R.drawable.straight);
@@ -46,7 +52,7 @@ public class BluetoothHandler extends Handler {
                     // warning
                     else if (vals[1].equals("1")) {
                         //left
-                        if (Integer.parseInt(vals[2]) > 0)
+                        if (vals[2].equals("L"))
                             mMainActivity.offsetIcon.setImageResource(R.drawable.warn_left);
                         //right
                         else
@@ -55,13 +61,13 @@ public class BluetoothHandler extends Handler {
                     // alert
                     else if (vals[1].equals("2")) {
                         //left
-                        if (Integer.parseInt(vals[2]) > 0) {
-                            notificationBuilder.setContentText("Off " + vals[2] + " m to the left");
+                        if (vals[2].equals("L")) {
+                            notificationBuilder.setContentText("Off " + vals[3] + " m to the left");
                             mMainActivity.offsetIcon.setImageResource(R.drawable.alert_left);
                         }
                             //right
                         else {
-                            notificationBuilder.setContentText("Off " + vals[2] + " m to the right");
+                            notificationBuilder.setContentText("Off " + vals[3] + " m to the right");
                             mMainActivity.offsetIcon.setImageResource(R.drawable.alert_right);
                         }
                         Notification notification = notificationBuilder.build();
