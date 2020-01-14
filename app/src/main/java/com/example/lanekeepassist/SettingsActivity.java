@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -24,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
     EditText et_TLx, et_TLy, et_TRx, et_TRy, et_BLx, et_BLy, et_BRx, et_BRy,
             et_RGB_R, et_HLS_L, et_LAB_L;
     Button b_update, b_save;
+    SeekBar seekThresh;
 
     private Canvas mCanvas;
     private Paint mPaintRed = new Paint();
@@ -81,15 +83,16 @@ public class SettingsActivity extends AppCompatActivity {
                 String BRx = et_BRx.getText().toString();
                 String BRy = et_BRy.getText().toString();
 
-                String RGB_R = et_RGB_R.getText().toString();
-                String HLS_L = et_HLS_L.getText().toString();
-                String LAB_L = et_LAB_L.getText().toString();
+                String seekThreshStr = Integer.toString(seekThresh.getProgress());
+
+//                String RGB_R = et_RGB_R.getText().toString();
+//                String HLS_L = et_HLS_L.getText().toString();
+//                String LAB_L = et_LAB_L.getText().toString();
 
                 String del = " ";
 
                 String settings = "save_settings" + del + BLx + del + BLy + del + BRx + del + BRy
-                        + del + TRx + del + TRy + del + TLx + del + TLy
-                        + del + RGB_R + del + HLS_L + del + LAB_L;
+                        + del + TRx + del + TRy + del + TLx + del + TLy + del + seekThreshStr;
 
                 i.putExtra("settings", settings);
                 setResult(0, i);
@@ -117,9 +120,11 @@ public class SettingsActivity extends AppCompatActivity {
         et_BRx = findViewById(R.id.et_BRx);
         et_BRy = findViewById(R.id.et_BRy);
 
-        et_RGB_R = findViewById(R.id.et_RGB_R);
-        et_HLS_L = findViewById(R.id.et_HLS_L);
-        et_LAB_L = findViewById(R.id.et_LAB_L);
+//        et_RGB_R = findViewById(R.id.et_RGB_R);
+//        et_HLS_L = findViewById(R.id.et_HLS_L);
+//        et_LAB_L = findViewById(R.id.et_LAB_L);
+
+        seekThresh = findViewById(R.id.seekThresh);
 
         b_update = findViewById(R.id.b_update);
         b_save = findViewById(R.id.b_save);
@@ -175,9 +180,17 @@ public class SettingsActivity extends AppCompatActivity {
             et_TLx.setText(val[7]);
             et_TLy.setText(val[8]);
 
-            et_RGB_R.setText(val[9]);
-            et_HLS_L.setText(val[10]);
-            et_LAB_L.setText(val[11]);
+            int threshVal;
+            try {
+                threshVal = Integer.parseInt(val[9]);
+                seekThresh.setProgress(threshVal);
+            } catch (NumberFormatException e) {
+                seekThresh.setProgress(0);
+            }
+
+//            et_RGB_R.setText(val[9]);
+//            et_HLS_L.setText(val[10]);
+//            et_LAB_L.setText(val[11]);
         }
     }
 
