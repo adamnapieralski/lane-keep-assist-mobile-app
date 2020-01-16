@@ -170,7 +170,7 @@ public class SettingsActivity extends AppCompatActivity {
     public void handleSettingsReceived(String settings) {
         String[] val = settings.split(" ");
 
-        if (val.length == 12) {
+        if (val.length == 10) {
             et_BLx.setText(val[1]);
             et_BLy.setText(val[2]);
             et_BRx.setText(val[3]);
