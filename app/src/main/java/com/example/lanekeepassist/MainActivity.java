@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
             MainActivity.this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_drive_eta_black_24dp)
-            .setContentTitle("Lane Departure Warning")
+            .setContentTitle("Ostrzeżenie")
 //            .setContentText("")
             .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE) //Important for heads-up notification
             .setPriority(Notification.PRIORITY_MAX)
