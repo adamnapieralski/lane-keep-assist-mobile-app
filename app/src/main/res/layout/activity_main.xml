@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="25dp" />
 
+
     <ImageView
         android:id="@+id/offset_icon"
         android:layout_width="320dp"
@@ -22,14 +23,38 @@
         android:layout_width="match_parent"
         android:layout_height="25dp" />
 
-    <TextView
-        android:id="@+id/offset_text"
-        android:layout_gravity="center"
-        android:gravity="center"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32dp"
-        android:text="0m" />
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/left_arrow"
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="32dp"
+            android:text="&lt;&lt;&lt;"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/offset_text"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="32dp"
+            android:text="0.0m"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/right_arrow"
+            android:gravity="left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="32dp"
+            android:text="&gt;&gt;&gt;"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
@@ -40,7 +65,7 @@
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:text="Connect" />
+        android:text="Połącz z urządzeniem" />
 
 <!--    <Space-->
 <!--        android:layout_width="match_parent"-->
@@ -81,9 +106,9 @@
 
     <Button
         android:id="@+id/buttonSettings"
-        android:layout_width="93dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Settings" />
+        android:text="Ustawienia" />
 
 </LinearLayout>

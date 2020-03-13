@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lane Keep Assistant</string>
+    <string name="app_name">Asystent Utrzymania Pasa Ruchu</string>
     <string name="channel_name">LKA</string>
     <string name="channel_description">LKA notification channel</string>
 </resources>

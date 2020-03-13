@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -37,13 +38,23 @@ public class BluetoothHandler extends Handler {
                 Bundle bundle = msg.getData();
                 String string = bundle.getString("assistant");
                 String[] vals = string.split(" ");
-                if (vals.length == 4 && vals[0].equals("alert")) {
+                if (vals.length == 5 && vals[0].equals("alert")) {
+                    mMainActivity.offsetText.setText(vals[3] + "m");
                     //left
-                    if (vals[2].equals("L"))
-                        mMainActivity.offsetText.setText("<-- " + vals[3] + "m");
+                    if (vals[2].equals("L")) {
+                        mMainActivity.leftArrow.setVisibility(View.VISIBLE);
+                        mMainActivity.rightArrow.setVisibility(View.INVISIBLE);
+                    }
                     //right
-                    else
-                        mMainActivity.offsetText.setText(vals[3] + "m -->");
+                    else if (vals[2].equals("R")) {
+                        mMainActivity.leftArrow.setVisibility(View.INVISIBLE);
+                        mMainActivity.rightArrow.setVisibility(View.VISIBLE);
+                    }
+                    //straight
+                    else {
+                        mMainActivity.leftArrow.setVisibility(View.INVISIBLE);
+                        mMainActivity.rightArrow.setVisibility(View.INVISIBLE);
+                    }
 
                     // insignificant offset - straight icon
                     if (vals[1].equals("0")) {
@@ -70,9 +81,11 @@ public class BluetoothHandler extends Handler {
                             notificationBuilder.setContentText("Off " + vals[3] + " m to the right");
                             mMainActivity.offsetIcon.setImageResource(R.drawable.alert_right);
                         }
-                        Notification notification = notificationBuilder.build();
-                        notificationManagerCompat.notify(0, notification);
-                        mediaPlayer.start();
+                        if (vals[4].equals("True")) {
+                            Notification notification = notificationBuilder.build();
+                            notificationManagerCompat.notify(0, notification);
+                            mediaPlayer.start();
+                        }
                     }
 //                    if (vals[1].equals("R")) {
 //                        notificationBuilder.setContentText("Off " + vals[2] + " m to the right");

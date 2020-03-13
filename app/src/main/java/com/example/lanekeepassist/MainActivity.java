@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonConnect, buttonSend, buttonSettings;
 //    TextView txtReceived;
 //    EditText editTxtToSend;
-    TextView offsetText;
+    TextView offsetText, leftArrow, rightArrow;
     ImageView offsetIcon;
     BluetoothHandler btHandler;
 
@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         buttonSettings = findViewById(R.id.buttonSettings);
         offsetIcon = findViewById(R.id.offset_icon);
         offsetText = findViewById(R.id.offset_text);
+        leftArrow = findViewById(R.id.left_arrow);
+        rightArrow = findViewById(R.id.right_arrow);
 //        txtReceived = findViewById(R.id.textReceived);
 //        editTxtToSend = findViewById(R.id.editText);
     }
@@ -166,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
             MainActivity.this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_drive_eta_black_24dp)
-            .setContentTitle("Lane Departure Warning")
+            .setContentTitle("Ostrzeżenie")
 //            .setContentText("")
             .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE) //Important for heads-up notification
             .setPriority(Notification.PRIORITY_MAX)
